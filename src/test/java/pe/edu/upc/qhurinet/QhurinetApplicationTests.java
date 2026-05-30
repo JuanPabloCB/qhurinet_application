@@ -1,4 +1,4 @@
-package org.example.qhurinet_application;
+package pe.edu.upc.qhurinet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

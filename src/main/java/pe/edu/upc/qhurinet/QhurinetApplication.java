@@ -1,4 +1,4 @@
-package org.example.qhurinet_application;
+package pe.edu.upc.qhurinet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
