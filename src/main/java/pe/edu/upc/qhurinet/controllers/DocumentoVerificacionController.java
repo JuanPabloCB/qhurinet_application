@@ -20,6 +20,7 @@ import pe.edu.upc.qhurinet.servicesinterfaces.IUsuarioService;
 
 import java.util.List;
 
+//Prueba de clonación de rama Bedith
 @RestController
 @RequestMapping("/api/documentos-verificacion")
 @PreAuthorize("hasAnyRole('ADMIN','USER','GENERADOR','RECOLECTOR','BODEGA')")
