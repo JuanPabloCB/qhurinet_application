@@ -1,46 +1,50 @@
 package pe.edu.upc.qhurinet.entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "Usuario")
+@Table(name = "usuario")
 public class Usuario {
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+    private Long id;
+
+    @Column(name = "username", length = 80, nullable = false, unique = true)
+    private String username;
+
+    @Column(name = "password", length = 120, nullable = false)
+    private String password;
 
     @Column(name = "nombre", length = 150, nullable = false)
     private String nombre;
 
-    @Column(name = "email", length = 200, nullable = false, unique = true)
-    private String email;
+    @Column(name = "correo", length = 150, nullable = false, unique = true)
+    private String correo;
 
-    @Column(name = "username", length = 50, nullable = false, unique = true)
-    private String username;
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
-    private String passwordHash;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "telefono", length = 20)
+    @Column(name = "telefono", length = 30)
     private String telefono;
 
     @Column(name = "foto_url", length = 500)
@@ -49,13 +53,10 @@ public class Usuario {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "descripcion_imagenes_json", columnDefinition = "TEXT")
-    private String descripcionImagenesJson;
-
-    @Column(name = "tipo_cuenta", length = 30, nullable = false)
+    @Column(name = "tipo_cuenta", length = 30)
     private String tipoCuenta;
 
-    @Column(name = "proveedor_auth", length = 20, nullable = false)
+    @Column(name = "proveedor_auth", length = 30)
     private String proveedorAuth;
 
     @Column(name = "disponible", nullable = false)
@@ -67,49 +68,36 @@ public class Usuario {
     @Column(name = "puntos_totales", nullable = false)
     private Integer puntosTotales;
 
-    @Column(name = "nivel_participacion", length = 30, nullable = false)
+    @Column(name = "nivel_participacion", length = 50)
     private String nivelParticipacion;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Role> roles = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuario_rol",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_rol")
+    )
+    private Set<Rol> roles = new HashSet<>();
 
     public Usuario() {
     }
 
-    public Usuario(UUID id, String nombre, String email, String username, String passwordHash, String telefono, String fotoUrl, String descripcion, String descripcionImagenesJson, String tipoCuenta, String proveedorAuth, Boolean disponible, Boolean verificado, Integer puntosTotales, String nivelParticipacion, LocalDateTime createdAt, LocalDateTime updatedAt, List<Role> roles) {
+    public Usuario(Long id, String username, String password, String nombre, String correo, Boolean enabled, LocalDateTime createdAt, Set<Rol> roles) {
         this.id = id;
-        this.nombre = nombre;
-        this.email = email;
         this.username = username;
-        this.passwordHash = passwordHash;
-        this.telefono = telefono;
-        this.fotoUrl = fotoUrl;
-        this.descripcion = descripcion;
-        this.descripcionImagenesJson = descripcionImagenesJson;
-        this.tipoCuenta = tipoCuenta;
-        this.proveedorAuth = proveedorAuth;
-        this.disponible = disponible;
-        this.verificado = verificado;
-        this.puntosTotales = puntosTotales;
-        this.nivelParticipacion = nivelParticipacion;
+        this.password = password;
+        this.nombre = nombre;
+        this.correo = correo;
+        this.enabled = enabled;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        setRoles(roles);
+        this.roles = roles;
     }
 
     @PrePersist
     public void prePersist() {
-        LocalDateTime fechaActual = LocalDateTime.now();
-        this.createdAt = fechaActual;
-        this.updatedAt = fechaActual;
-        if (this.proveedorAuth == null) {
-            this.proveedorAuth = "local";
+        this.createdAt = LocalDateTime.now();
+        if (this.enabled == null) {
+            this.enabled = true;
         }
         if (this.disponible == null) {
             this.disponible = true;
@@ -120,38 +108,20 @@ public class Usuario {
         if (this.puntosTotales == null) {
             this.puntosTotales = 0;
         }
-        if (this.nivelParticipacion == null) {
-            this.nivelParticipacion = "Bronce";
+        if (this.proveedorAuth == null) {
+            this.proveedorAuth = "local";
+        }
+        if (this.tipoCuenta == null) {
+            this.tipoCuenta = "GENERADOR";
         }
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getUsername() {
@@ -162,12 +132,74 @@ public class Usuario {
         this.username = username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getEmail() {
+        return correo;
+    }
+
+    public void setEmail(String email) {
+        this.correo = email;
+    }
+
     public String getPasswordHash() {
-        return passwordHash;
+        return password;
     }
 
     public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+        this.password = passwordHash;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Set<Rol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles;
+    }
+
+    public void syncRoles(Collection<String> roles) {
+        this.roles = roles.stream()
+                .map(rol -> new Rol(null, rol.replace("ROLE_", "").toUpperCase()))
+                .collect(Collectors.toSet());
     }
 
     public String getTelefono() {
@@ -192,14 +224,6 @@ public class Usuario {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    public String getDescripcionImagenesJson() {
-        return descripcionImagenesJson;
-    }
-
-    public void setDescripcionImagenesJson(String descripcionImagenesJson) {
-        this.descripcionImagenesJson = descripcionImagenesJson;
     }
 
     public String getTipoCuenta() {
@@ -248,58 +272,5 @@ public class Usuario {
 
     public void setNivelParticipacion(String nivelParticipacion) {
         this.nivelParticipacion = nivelParticipacion;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles.clear();
-        if (roles != null) {
-            roles.forEach(this::addRole);
-        }
-    }
-
-    public void addRole(Role role) {
-        role.setUsuario(this);
-        this.roles.add(role);
-    }
-
-    public void syncRoles(List<String> roleNames) {
-        Set<String> normalizedRoles = roleNames.stream()
-                .map(String::trim)
-                .map(String::toUpperCase)
-                .collect(Collectors.toSet());
-
-        this.roles.removeIf(role -> !normalizedRoles.contains(role.getRol()));
-
-        Set<String> currentRoles = this.roles.stream()
-                .map(Role::getRol)
-                .collect(Collectors.toSet());
-
-        normalizedRoles.stream()
-                .filter(roleName -> !currentRoles.contains(roleName))
-                .forEach(roleName -> {
-                    Role role = new Role();
-                    role.setRol(roleName);
-                    addRole(role);
-                });
     }
 }

@@ -3,25 +3,23 @@ package pe.edu.upc.qhurinet.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "Transaccion_Dinero")
+@Table(name = "transaccion_dinero")
 public class TransaccionDinero {
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -39,23 +37,17 @@ public class TransaccionDinero {
     @Column(name = "estado", length = 30, nullable = false)
     private String estado;
 
-    @Column(name = "concepto", length = 255, nullable = false)
+    @Column(name = "concepto", length = 250, nullable = false)
     private String concepto;
 
     @Column(name = "metodo_pago_tipo", length = 50)
     private String metodoPagoTipo;
 
-    @Column(name = "metodo_pago_detalle", length = 200)
+    @Column(name = "metodo_pago_detalle", length = 120)
     private String metodoPagoDetalle;
 
-    @Column(name = "referencia_externa", length = 200)
+    @Column(name = "referencia_externa", length = 120)
     private String referenciaExterna;
-
-    @Column(name = "referencia_tipo", length = 50)
-    private String referenciaTipo;
-
-    @Column(name = "referencia_id")
-    private UUID referenciaId;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -63,38 +55,16 @@ public class TransaccionDinero {
     public TransaccionDinero() {
     }
 
-    public TransaccionDinero(UUID id, Usuario usuario, String tipo, BigDecimal monto, String moneda, String estado, String concepto, String metodoPagoTipo, String metodoPagoDetalle, String referenciaExterna, String referenciaTipo, UUID referenciaId, LocalDateTime createdAt) {
-        this.id = id;
-        this.usuario = usuario;
-        this.tipo = tipo;
-        this.monto = monto;
-        this.moneda = moneda;
-        this.estado = estado;
-        this.concepto = concepto;
-        this.metodoPagoTipo = metodoPagoTipo;
-        this.metodoPagoDetalle = metodoPagoDetalle;
-        this.referenciaExterna = referenciaExterna;
-        this.referenciaTipo = referenciaTipo;
-        this.referenciaId = referenciaId;
-        this.createdAt = createdAt;
-    }
-
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.moneda == null) {
-            this.moneda = "PEN";
-        }
-        if (this.estado == null) {
-            this.estado = "pendiente";
-        }
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -168,22 +138,6 @@ public class TransaccionDinero {
 
     public void setReferenciaExterna(String referenciaExterna) {
         this.referenciaExterna = referenciaExterna;
-    }
-
-    public String getReferenciaTipo() {
-        return referenciaTipo;
-    }
-
-    public void setReferenciaTipo(String referenciaTipo) {
-        this.referenciaTipo = referenciaTipo;
-    }
-
-    public UUID getReferenciaId() {
-        return referenciaId;
-    }
-
-    public void setReferenciaId(UUID referenciaId) {
-        this.referenciaId = referenciaId;
     }
 
     public LocalDateTime getCreatedAt() {

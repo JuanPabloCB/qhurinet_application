@@ -3,24 +3,22 @@ package pe.edu.upc.qhurinet.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "Certificado")
+@Table(name = "certificado")
 public class Certificado {
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -47,7 +45,7 @@ public class Certificado {
     public Certificado() {
     }
 
-    public Certificado(UUID id, Usuario usuario, String nombre, String descripcion, String nivelDificultad, Integer puntosRequeridos, String urlPdf, LocalDateTime fechaObtencion) {
+    public Certificado(Long id, Usuario usuario, String nombre, String descripcion, String nivelDificultad, Integer puntosRequeridos, String urlPdf, LocalDateTime fechaObtencion) {
         this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
@@ -63,11 +61,11 @@ public class Certificado {
         this.fechaObtencion = LocalDateTime.now();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
