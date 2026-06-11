@@ -1,5 +1,4 @@
 package pe.edu.upc.qhurinet.repositories;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import pe.edu.upc.qhurinet.entities.UsuarioIncentivo;
@@ -8,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface IUsuarioIncentivoRepository extends JpaRepository<UsuarioIncentivo, Long> {
+public interface IUsuarioIncentivoRepository extends JpaRepository<UsuarioIncentivo, Long>{
     Optional<UsuarioIncentivo> findByUsuarioIdAndIncentivoId(Long idUsuario, Long idIncentivo);
 
     @Query(value = """

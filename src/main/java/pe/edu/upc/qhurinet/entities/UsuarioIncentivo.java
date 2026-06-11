@@ -1,5 +1,4 @@
 package pe.edu.upc.qhurinet.entities;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
