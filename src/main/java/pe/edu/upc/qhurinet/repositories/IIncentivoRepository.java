@@ -3,7 +3,6 @@ package pe.edu.upc.qhurinet.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import pe.edu.upc.qhurinet.entities.Incentivo;
-
 import java.util.List;
 
 public interface IIncentivoRepository extends JpaRepository<Incentivo, Long> {

@@ -14,6 +14,7 @@ public class IncentivoServiceImplement implements IIncentivoService {
     @Autowired
     private IIncentivoRepository iR;
 
+
     @Override
     public List<Incentivo> list() {
         return iR.findAll();

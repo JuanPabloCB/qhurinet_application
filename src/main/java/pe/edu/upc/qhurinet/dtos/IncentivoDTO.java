@@ -1,5 +1,4 @@
 package pe.edu.upc.qhurinet.dtos;
-
 import java.time.LocalDate;
 
 public class IncentivoDTO {
