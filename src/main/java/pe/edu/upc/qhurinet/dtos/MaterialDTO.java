@@ -8,6 +8,7 @@ public class MaterialDTO {
     private String categoria;
     private String descripcion;
     private BigDecimal puntosPorKg;
+    private Long usuarioId;
 
     public MaterialDTO() {
     }
@@ -58,5 +59,13 @@ public class MaterialDTO {
 
     public void setPuntosPorKg(BigDecimal puntosPorKg) {
         this.puntosPorKg = puntosPorKg;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 }
