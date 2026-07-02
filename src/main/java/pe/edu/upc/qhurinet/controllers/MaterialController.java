@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.upc.qhurinet.dtos.MaterialDTO;
 import pe.edu.upc.qhurinet.entities.Material;
+import pe.edu.upc.qhurinet.entities.Usuario;
+import pe.edu.upc.qhurinet.securities.SecurityUserResolver;
 import pe.edu.upc.qhurinet.servicesinterfaces.IMaterialService;
 
 import java.util.List;
@@ -28,12 +30,14 @@ public class MaterialController {
     @Autowired
     private IMaterialService mS;
 
+    @Autowired
+    private SecurityUserResolver securityUserResolver;
+
     @GetMapping({"", "/lista"})
     public ResponseEntity<List<MaterialDTO>> listar() {
-        ModelMapper m = new ModelMapper();
         List<MaterialDTO> lista = mS.list()
                 .stream()
-                .map(y -> m.map(y, MaterialDTO.class))
+                .map(this::toDTO)
                 .collect(Collectors.toList());
 
         if (lista.isEmpty()) {
@@ -43,28 +47,44 @@ public class MaterialController {
     }
 
     @PostMapping({"", "/nuevo"})
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> registrar(@RequestBody MaterialDTO dto) {
         ModelMapper m = new ModelMapper();
         Material material = m.map(dto, Material.class);
+        material.setUsuario(securityUserResolver.currentUser());
         Material cur = mS.insert(material);
-        MaterialDTO responseDTO = m.map(cur, MaterialDTO.class);
+        MaterialDTO responseDTO = toDTO(cur);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+
+    @GetMapping("/mis-materiales")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<MaterialDTO>> listarMisMateriales() {
+        Usuario usuario = securityUserResolver.currentUser();
+        List<MaterialDTO> lista = mS.list()
+                .stream()
+                .filter(material -> material.getUsuario() != null && usuario.getId().equals(material.getUsuario().getId()))
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        ModelMapper m = new ModelMapper();
         Optional<Material> material = mS.listId(id);
 
         if (material.isPresent()) {
-            return ResponseEntity.ok(m.map(material.get(), MaterialDTO.class));
+            return ResponseEntity.ok(toDTO(material.get()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Material no encontrado");
     }
 
     @PutMapping("/actualiza")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> actualizar(@RequestBody MaterialDTO dto) {
         Optional<Material> existente = mS.listId(dto.getId());
         if (existente.isEmpty()) {
@@ -82,14 +102,14 @@ public class MaterialController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> actualizarPorId(@PathVariable Long id, @RequestBody MaterialDTO dto) {
         dto.setId(id);
         return actualizar(dto);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
         Optional<Material> material = mS.listId(id);
         if (material.isEmpty()) {
@@ -102,10 +122,9 @@ public class MaterialController {
 
     @GetMapping({"/clasificar", "/sugerencia"})
     public ResponseEntity<?> clasificar(@RequestParam("texto") String texto) {
-        ModelMapper m = new ModelMapper();
         List<MaterialDTO> lista = mS.clasificar(texto)
                 .stream()
-                .map(y -> m.map(y, MaterialDTO.class))
+                .map(this::toDTO)
                 .collect(Collectors.toList());
 
         if (lista.isEmpty()) {
@@ -113,5 +132,14 @@ public class MaterialController {
                     .body("Material no reconocido. Seleccione una categoria manualmente");
         }
         return ResponseEntity.ok(lista);
+    }
+
+    private MaterialDTO toDTO(Material material) {
+        ModelMapper m = new ModelMapper();
+        MaterialDTO dto = m.map(material, MaterialDTO.class);
+        if (material.getUsuario() != null) {
+            dto.setUsuarioId(material.getUsuario().getId());
+        }
+        return dto;
     }
 }
