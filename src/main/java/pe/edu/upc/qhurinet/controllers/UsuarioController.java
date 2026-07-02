@@ -178,6 +178,7 @@ public class UsuarioController {
         UsuarioDTO dto = m.map(usuario, UsuarioDTO.class);
         Set<String> roles = usuario.getRoles().stream().map(Rol::getNombre).collect(Collectors.toSet());
         dto.setRoles(roles);
+        dto.setPuntosTotales(usuario.getPuntosTotales() == null ? 0 : usuario.getPuntosTotales());
         return dto;
     }
 
