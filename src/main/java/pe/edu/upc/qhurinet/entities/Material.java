@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
@@ -28,6 +30,10 @@ public class Material {
 
     @Column(name = "puntos_por_kg", precision = 10, scale = 2, nullable = false)
     private BigDecimal puntosPorKg;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = true)
+    private Usuario usuario;
 
     public Material() {
     }
@@ -70,5 +76,13 @@ public class Material {
 
     public void setPuntosPorKg(BigDecimal puntosPorKg) {
         this.puntosPorKg = puntosPorKg;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }
