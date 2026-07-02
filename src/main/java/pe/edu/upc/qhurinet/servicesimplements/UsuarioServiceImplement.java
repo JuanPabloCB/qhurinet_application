@@ -44,9 +44,11 @@ public class UsuarioServiceImplement implements IUsuarioService {
             throw new IllegalArgumentException("El correo ya existe");
         }
         u.setPassword(passwordEncoder.encode(u.getPassword()));
+        String tipoCuenta = normalizarTipoCuenta(u.getTipoCuenta());
+        u.setTipoCuenta(tipoCuenta);
         Set<Rol> roles = new HashSet<>();
-        Rol rolUsuario = rR.findByNombre("USER").orElseGet(() -> rR.save(new Rol(null, "USER")));
-        roles.add(rolUsuario);
+        roles.add(obtenerOCrearRol("USER"));
+        roles.add(obtenerOCrearRol(tipoCuenta));
         u.setRoles(roles);
         return uR.save(u);
     }
@@ -93,5 +95,21 @@ public class UsuarioServiceImplement implements IUsuarioService {
     @Override
     public void delete(Long id) {
         uR.deleteById(id);
+    }
+
+    private Rol obtenerOCrearRol(String nombre) {
+        String normalizado = nombre == null ? "USER" : nombre.replace("ROLE_", "").trim().toUpperCase();
+        return rR.findByNombre(normalizado).orElseGet(() -> rR.save(new Rol(null, normalizado)));
+    }
+
+    private String normalizarTipoCuenta(String tipoCuenta) {
+        String normalizado = tipoCuenta == null ? "GENERADOR" : tipoCuenta.replace("ROLE_", "").trim().toUpperCase();
+
+        return switch (normalizado) {
+            case "EMISOR", "GENERADOR", "USER" -> "GENERADOR";
+            case "RECOLECTOR" -> "RECOLECTOR";
+            case "BODEGA" -> "BODEGA";
+            default -> "GENERADOR";
+        };
     }
 }

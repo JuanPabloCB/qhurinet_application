@@ -11,6 +11,7 @@ public class UsuarioDTO {
     private Boolean enabled;
     private LocalDateTime createdAt;
     private Set<String> roles;
+    private String tipoCuenta;
 
     public UsuarioDTO() {
     }
@@ -79,5 +80,13 @@ public class UsuarioDTO {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    public String getTipoCuenta() {
+        return tipoCuenta;
+    }
+
+    public void setTipoCuenta(String tipoCuenta) {
+        this.tipoCuenta = tipoCuenta;
     }
 }

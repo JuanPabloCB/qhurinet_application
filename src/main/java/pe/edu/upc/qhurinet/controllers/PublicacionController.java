@@ -243,6 +243,7 @@ public class PublicacionController {
         PublicacionDTO dto = m.map(publicacion, PublicacionDTO.class);
         dto.setIdUsuario(publicacion.getUsuario().getId());
         dto.setUsuarioNombre(publicacion.getUsuario().getNombre());
+        dto.setImagenesJson(publicacion.getImagenesJson());
         return dto;
     }
 

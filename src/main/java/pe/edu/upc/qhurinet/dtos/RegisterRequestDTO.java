@@ -5,6 +5,7 @@ public class RegisterRequestDTO {
     private String password;
     private String nombre;
     private String correo;
+    private String tipoCuenta;
 
     public RegisterRequestDTO() {
     }
@@ -46,5 +47,13 @@ public class RegisterRequestDTO {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public String getTipoCuenta() {
+        return tipoCuenta;
+    }
+
+    public void setTipoCuenta(String tipoCuenta) {
+        this.tipoCuenta = tipoCuenta;
     }
 }
