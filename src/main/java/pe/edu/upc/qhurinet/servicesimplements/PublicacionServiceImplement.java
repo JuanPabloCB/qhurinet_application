@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import pe.edu.upc.qhurinet.entities.Publicacion;
 import pe.edu.upc.qhurinet.repositories.IPublicacionRepository;
 import pe.edu.upc.qhurinet.servicesinterfaces.IPublicacionService;
+import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upc.qhurinet.repositories.IPublicacionMaterialRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,9 @@ import java.util.Optional;
 public class PublicacionServiceImplement implements IPublicacionService {
     @Autowired
     private IPublicacionRepository pR;
+
+    @Autowired
+    private IPublicacionMaterialRepository pmR;
 
     @Override
     public List<Publicacion> list() {
@@ -34,8 +39,14 @@ public class PublicacionServiceImplement implements IPublicacionService {
         pR.save(p);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
+        if (!pR.existsById(id)) {
+            throw new IllegalArgumentException("Publicación no encontrada");
+        }
+
+        pmR.deleteByPublicacionId(id);
         pR.deleteById(id);
     }
 

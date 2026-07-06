@@ -89,6 +89,7 @@ public class AuthController {
         usuario.setPassword(request.getPassword());
         usuario.setNombre(request.getNombre());
         usuario.setCorreo(request.getCorreo());
+        usuario.setTipoCuenta(request.getTipoCuenta());
         return toDTO(usuarioService.registrarUsuario(usuario));
     }
 

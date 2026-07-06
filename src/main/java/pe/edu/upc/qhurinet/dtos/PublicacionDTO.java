@@ -16,11 +16,12 @@ public class PublicacionDTO {
     private Double longitud;
     private Boolean activo;
     private LocalDateTime createdAt;
+    private String imagenesJson;
 
     public PublicacionDTO() {
     }
 
-    public PublicacionDTO(Long id, Long idUsuario, String usuarioNombre, String titulo, String descripcion, String categoria, String material, String tipoPunto, String direccion, Double latitud, Double longitud, Boolean activo, LocalDateTime createdAt) {
+    public PublicacionDTO(Long id, Long idUsuario, String usuarioNombre, String titulo, String descripcion, String categoria, String material, String tipoPunto, String direccion, Double latitud, Double longitud, Boolean activo, LocalDateTime createdAt, String imagenesJson) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.usuarioNombre = usuarioNombre;
@@ -34,6 +35,7 @@ public class PublicacionDTO {
         this.longitud = longitud;
         this.activo = activo;
         this.createdAt = createdAt;
+        this.imagenesJson = imagenesJson;
     }
 
     public Long getId() {
@@ -138,5 +140,13 @@ public class PublicacionDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getImagenesJson() {
+        return imagenesJson;
+    }
+
+    public void setImagenesJson(String imagenesJson) {
+        this.imagenesJson = imagenesJson;
     }
 }

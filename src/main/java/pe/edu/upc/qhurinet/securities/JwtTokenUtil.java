@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenUtil {
-    private static final long ACCESS_TOKEN_VALIDITY = 15 * 60 * 1000;
+    private static final long ACCESS_TOKEN_VALIDITY = 2 * 60 * 60 * 1000;
 
     @Value("${jwt.secret}")
     private String secret;
